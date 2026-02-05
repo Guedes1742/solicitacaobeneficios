@@ -12,7 +12,7 @@ background:#f2f2f2;
 }
 
 .container{
-width:900px;
+width:950px;
 margin:30px auto;
 background:white;
 padding:25px;
@@ -27,7 +27,7 @@ text-align:center;
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:20px;
+margin-top:15px;
 }
 
 th,td{
@@ -55,6 +55,15 @@ color:white;
 border:none;
 }
 
+.filter{
+margin-top:15px;
+}
+
+.filter label{
+margin-right:15px;
+font-weight:bold;
+}
+
 .info{
 margin-top:10px;
 font-style:italic;
@@ -73,17 +82,25 @@ Lista de solicitações de benefícios sociais destinadas à população da terc
 Todos os dados apresentados são fictícios e utilizados apenas para fins educacionais.
 </p>
 
-<table id="tabela">
+<div class="filter">
+Filtrar Status:
+<label><input type="checkbox" value="Pendente" checked onchange="applyFilter()"> Pendente</label>
+<label><input type="checkbox" value="Concluído" checked onchange="applyFilter()"> Concluído</label>
+<label><input type="checkbox" value="Cancelado" checked onchange="applyFilter()"> Cancelado</label>
+</div>
+
+<table>
 <thead>
 <tr>
 <th>Documento</th>
 <th>Nome</th>
 <th>Sexo</th>
 <th>Data Nascimento</th>
+<th>Status</th>
 </tr>
 </thead>
 
-<tbody></tbody>
+<tbody id="tbody"></tbody>
 
 </table>
 
@@ -101,47 +118,51 @@ Mostrando 20 registros por página.
 
 <script>
 
-const nomes = ["Maria","José","Ana","João","Paulo","Carlos","Fernanda","Marcos","Patricia","Ricardo"];
-const sobrenomes = ["Silva","Souza","Costa","Pereira","Oliveira","Rodrigues","Almeida","Lima"];
+const nomes=["Maria","José","Ana","João","Paulo","Carlos","Fernanda","Marcos","Patricia","Ricardo"];
+const sobrenomes=["Silva","Souza","Costa","Pereira","Oliveira","Rodrigues","Almeida","Lima"];
+const statusList=["Pendente","Concluído","Cancelado"];
 
-let dados = [];
+let dados=[];
+let filtrados=[];
+let pagina=1;
+const porPagina=20;
 
 for(let i=0;i<900;i++){
-let nome = nomes[Math.floor(Math.random()*nomes.length)]+" "+
-sobrenomes[Math.floor(Math.random()*sobrenomes.length)];
 
-let sexo = Math.random()>0.5?"Masculino":"Feminino";
-
-let ano = 1940 + Math.floor(Math.random()*20);
-let mes = String(Math.floor(Math.random()*12)+1).padStart(2,"0");
-let dia = String(Math.floor(Math.random()*28)+1).padStart(2,"0");
+let nome=nomes[Math.floor(Math.random()*nomes.length)]+" "+sobrenomes[Math.floor(Math.random()*sobrenomes.length)];
+let sexo=Math.random()>0.5?"Masculino":"Feminino";
+let ano=1940+Math.floor(Math.random()*20);
+let mes=String(Math.floor(Math.random()*12)+1).padStart(2,"0");
+let dia=String(Math.floor(Math.random()*28)+1).padStart(2,"0");
+let status=statusList[Math.floor(Math.random()*3)];
 
 dados.push({
 doc:""+Math.floor(10000000000+Math.random()*90000000000),
 nome:nome,
 sexo:sexo,
-data:`${dia}/${mes}/${ano}`
+data:`${dia}/${mes}/${ano}`,
+status:status
 });
 }
 
-let pagina=1;
-const porPagina=20;
+filtrados=[...dados];
 
 function render(){
 
 let inicio=(pagina-1)*porPagina;
 let fim=inicio+porPagina;
 
-let tbody=document.querySelector("tbody");
+let tbody=document.getElementById("tbody");
 tbody.innerHTML="";
 
-dados.slice(inicio,fim).forEach(d=>{
+filtrados.slice(inicio,fim).forEach(d=>{
 tbody.innerHTML+=`
 <tr>
 <td>${d.doc}</td>
 <td>${d.nome}</td>
 <td>${d.sexo}</td>
 <td>${d.data}</td>
+<td>${d.status}</td>
 </tr>`;
 });
 
@@ -149,7 +170,7 @@ document.getElementById("page").innerText=`Página ${pagina}`;
 }
 
 function next(){
-if(pagina<Math.ceil(dados.length/porPagina)){
+if(pagina<Math.ceil(filtrados.length/porPagina)){
 pagina++;
 render();
 }
@@ -160,6 +181,17 @@ if(pagina>1){
 pagina--;
 render();
 }
+}
+
+function applyFilter(){
+
+let checks=document.querySelectorAll('.filter input:checked');
+let valores=[...checks].map(c=>c.value);
+
+filtrados=dados.filter(d=>valores.includes(d.status));
+
+pagina=1;
+render();
 }
 
 render();
