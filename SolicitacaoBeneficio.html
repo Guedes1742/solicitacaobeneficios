@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+
+<title>Solicitação de Benefícios</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f2f2f2;
+}
+
+.container{
+width:900px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,.2);
+}
+
+h1{
+text-align:center;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:8px;
+text-align:center;
+}
+
+th{
+background:#007bff;
+color:white;
+}
+
+.pagination{
+margin-top:20px;
+text-align:center;
+}
+
+button{
+padding:8px 15px;
+margin:5px;
+cursor:pointer;
+background:#007bff;
+color:white;
+border:none;
+}
+
+.info{
+margin-top:10px;
+font-style:italic;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Solicitação de Benefícios – Terceira Idade</h1>
+
+<p>
+Lista de solicitações de benefícios sociais destinadas à população da terceira idade.<br>
+Todos os dados apresentados são fictícios e utilizados apenas para fins educacionais.
+</p>
+
+<table id="tabela">
+<thead>
+<tr>
+<th>Documento</th>
+<th>Nome</th>
+<th>Sexo</th>
+<th>Data Nascimento</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+
+<div class="pagination">
+<button onclick="prev()">Anterior</button>
+<span id="page"></span>
+<button onclick="next()">Próxima</button>
+</div>
+
+<div class="info">
+Mostrando 20 registros por página.
+</div>
+
+</div>
+
+<script>
+
+const nomes = ["Maria","José","Ana","João","Paulo","Carlos","Fernanda","Marcos","Patricia","Ricardo"];
+const sobrenomes = ["Silva","Souza","Costa","Pereira","Oliveira","Rodrigues","Almeida","Lima"];
+
+let dados = [];
+
+for(let i=0;i<900;i++){
+let nome = nomes[Math.floor(Math.random()*nomes.length)]+" "+
+sobrenomes[Math.floor(Math.random()*sobrenomes.length)];
+
+let sexo = Math.random()>0.5?"Masculino":"Feminino";
+
+let ano = 1940 + Math.floor(Math.random()*20);
+let mes = String(Math.floor(Math.random()*12)+1).padStart(2,"0");
+let dia = String(Math.floor(Math.random()*28)+1).padStart(2,"0");
+
+dados.push({
+doc:""+Math.floor(10000000000+Math.random()*90000000000),
+nome:nome,
+sexo:sexo,
+data:`${dia}/${mes}/${ano}`
+});
+}
+
+let pagina=1;
+const porPagina=20;
+
+function render(){
+
+let inicio=(pagina-1)*porPagina;
+let fim=inicio+porPagina;
+
+let tbody=document.querySelector("tbody");
+tbody.innerHTML="";
+
+dados.slice(inicio,fim).forEach(d=>{
+tbody.innerHTML+=`
+<tr>
+<td>${d.doc}</td>
+<td>${d.nome}</td>
+<td>${d.sexo}</td>
+<td>${d.data}</td>
+</tr>`;
+});
+
+document.getElementById("page").innerText=`Página ${pagina}`;
+}
+
+function next(){
+if(pagina<Math.ceil(dados.length/porPagina)){
+pagina++;
+render();
+}
+}
+
+function prev(){
+if(pagina>1){
+pagina--;
+render();
+}
+}
+
+render();
+
+</script>
+
+</body>
+</html>
